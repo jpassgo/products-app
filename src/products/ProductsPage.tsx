@@ -1,76 +1,24 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Grid, Card, CardContent, Typography, Button, Modal, TextField, Box, Fade} from "@mui/material";
+import { Grid, Card, CardContent, Typography, Button, Modal, TextField, Box } from "@mui/material";
 import type { Product } from "./types/Product";
+import ProductCard from "./components/ProductCard";
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
 
 export default function ProductsPage() {
 
-    const [products, setProducts] = useState<Array<Product>>([]);
+    const [products, setProducts] = useState<Array<Product>>(
+        [{'title': 'hat1', 'description': 'This is a hat'}, 
+            {'title': 'hat2', 'description': 'This is a hat'},
+            {'title': 'ha3', 'description': 'This is a hat'}]);    
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [form, setForm] = useState({
         name: ""
     })
 
     useEffect(() => {
-       getProducts(); 
+    //    getProducts();              
     }, [])
-    
-    return (
-        <>
-            <Grid container spacing={2} sx={{ m: 2 }}>
-                <Grid item>
-                    <Typography variant="h5">Products</Typography>
-                </Grid>
-                <Grid item>
-                    <Button variant="contained" onClick={() => setModalOpen(true)}>
-                        Add Product
-                    </Button>
-                </Grid>
-            </Grid>
-            <Grid container direction="column" spacing={2}>
-                {products.map((product) => (
-                    <Grid item sx={{ ml: 2, mr: "50%"}}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h6">Product Name: {product.name}</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-            <Modal
-                open={modalOpen}
-                onClose={() => setModalOpen(!modalOpen)}
-                aria-labelledby="spring-modal-title"
-                aria-describedby="spring-modal-description">                                    
-                <Box sx={style}>
-                    <TextField 
-                        id="product-name" 
-                        name="name"
-                        label="Name" 
-                        value={form.name}
-                        variant="outlined" 
-                        onChange={updateForm}
-                    />                                                              
-                    <Button variant="contained" disabled={!isFormComplete()} onClick={saveProduct}>
-                        Save Product
-                    </Button>
-                </Box>                        
-            </Modal>
-        </>
-    );
 
     function updateForm(e: React.ChangeEvent<HTMLInputElement>) {
         const {name, value} = e.target;
@@ -97,6 +45,7 @@ export default function ProductsPage() {
         .then(response => setProducts(response as Array<Product>));
     }
 
+
     function saveProduct() {
         fetch('http://localhost:8080/products', {
             method: 'POST',
@@ -116,4 +65,30 @@ export default function ProductsPage() {
         }));
         setModalOpen(!modalOpen);
     }
+
+    const editProduct = (key: number, form: Product) => {
+        fetch(`http://localhost:8080/products`,)
+    }
+    
+    return (
+        <>
+            <Grid container spacing={2} sx={{ m: 2 }}>
+                <Grid item>
+                    <Typography variant="h5">Products</Typography>
+                </Grid>
+                <Grid item>
+                    <Button variant="contained" onClick={() => setModalOpen(true)}>
+                        Add Product
+                    </Button>
+                </Grid>
+            </Grid>
+            <Grid container direction="column" spacing={2}>
+                {products.map((product, index) => (
+                    <Grid item sx={{ ml: 2, mr: "50%"}}>
+                        <ProductCard key={index} title={product.title} description={product.description} editProduct={editProduct}></ProductCard>
+                    </Grid>
+                ))}
+            </Grid>
+        </>
+    );
 } 
